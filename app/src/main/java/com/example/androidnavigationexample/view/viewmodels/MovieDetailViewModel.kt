@@ -3,9 +3,11 @@ package com.example.androidnavigationexample.view.viewmodels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.androidnavigationexample.data.MovieRepository
 import com.example.androidnavigationexample.data.Result
 import com.example.androidnavigationexample.network.MovieDetail
+import com.example.androidnavigationexample.view.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,8 +31,8 @@ class MovieDetailViewModel @Inject constructor(
     val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
     
     init {
-        val movieId = savedStateHandle.get<String>("movieId")?.toIntOrNull()
-        movieId?.let { loadMovieDetails(it) }
+        val movieDetail = savedStateHandle.toRoute<Screen.Detail>()
+         loadMovieDetails(movieDetail.movieId)
     }
     
     private fun loadMovieDetails(movieId: Int) {

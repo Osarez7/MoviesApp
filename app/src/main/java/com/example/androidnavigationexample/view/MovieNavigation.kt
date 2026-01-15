@@ -2,17 +2,18 @@ package com.example.androidnavigationexample.view
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import kotlinx.serialization.Serializable
 
-sealed class Screen(val route: String) {
-    object Search : Screen("search")
-    object Detail : Screen("detail/{movieId}") {
-        fun createRoute(movieId: Int) = "detail/$movieId"
-    }
+
+sealed class Screen {
+    @Serializable
+    data object Home
+
+    @Serializable
+    data class Detail(val movieId: Int)
 }
 
 @Composable
@@ -21,24 +22,17 @@ fun MovieNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Search.route
+        startDestination = Screen.Home
     ) {
-        composable(Screen.Search.route) {
+        composable<Screen.Home> {
             MovieSearchScreen(
                 onMovieClick = { movieId ->
-                    navController.navigate(Screen.Detail.createRoute(movieId))
+                    navController.navigate(Screen.Detail(movieId))
                 }
             )
         }
-        
-        composable(
-            route = Screen.Detail.route,
-            arguments = listOf(
-                navArgument("movieId") {
-                    type = NavType.StringType
-                }
-            )
-        ) {
+
+        composable<Screen.Detail> {
             MovieDetailScreen(
                 onBackClick = {
                     navController.popBackStack()
